@@ -2,7 +2,7 @@
   "name": "monospace",
   "private": true,
   "version": "0.0.1",
-  "description": "Stencil App Starter",
+  "description": "monospace",
   "scripts": {
     "build": "stencil build",
     "start": "stencil build --dev --watch --serve",
