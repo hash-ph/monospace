@@ -43,6 +43,10 @@ export class MonoEditor {
             this.term.write(ansi.cursor.nextLine());
             return false;
         }
+        if (event.ctrlKey && event.code === 'KeyA') {
+            this.term.selectAll();
+            return false;
+        }
         return true;
     }
 
