@@ -16,7 +16,14 @@ export class MonoEditor {
     measure = { w: 0, h: 0 };
 
     componentDidLoad() {
-        this.term = new Terminal();
+        this.term = new Terminal({
+            theme: {
+                background: '#eaeaea',
+                foreground: '#3a3a3a',
+                cursor: '#ffd866',
+                selection: '#ffd866',
+            },
+        });
         this.termFitAddon = new FitAddon();
         this.term.loadAddon(this.termFitAddon);
         this.term.open(this.editorEl);
@@ -24,14 +31,20 @@ export class MonoEditor {
         this.term.onData(this.term.write.bind(this.term));
         this.term.attachCustomKeyEventHandler(this.terminalKeyHandler.bind(this));
 
-        const measureEl = this.term.element.querySelector('.xterm-char-measure-element');
-        this.measure.w = measureEl.clientWidth;
-        this.measure.h = measureEl.clientHeight;
-        this.termFitAddon.fit();
+        this.term.write('click anywhere and type!');
+
+        this.onTerminalResize();
     }
 
     disconnectedCallback() {
         this.term.dispose();
+    }
+
+    onTerminalResize() {
+        const measureEl = this.term.element.querySelector('.xterm-char-measure-element');
+        this.measure.w = measureEl.clientWidth;
+        this.measure.h = measureEl.clientHeight;
+        this.termFitAddon.fit();
     }
 
     terminalKeyHandler(event: KeyboardEvent): boolean {
