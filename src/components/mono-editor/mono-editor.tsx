@@ -21,7 +21,8 @@ export class MonoEditor {
         this.term.loadAddon(this.termFitAddon);
         this.term.open(this.editorEl);
 
-        this.term.onData(this.onTerminalData.bind(this));
+        this.term.onData(this.term.write.bind(this.term));
+        this.term.attachCustomKeyEventHandler(this.terminalKeyHandler.bind(this));
 
         const measureEl = this.term.element.querySelector('.xterm-char-measure-element');
         this.measure.w = measureEl.clientWidth;
@@ -33,8 +34,16 @@ export class MonoEditor {
         this.term.dispose();
     }
 
-    onTerminalData(data: string) {
-        this.term.write(data);
+    terminalKeyHandler(event: KeyboardEvent): boolean {
+        if (event.type === 'keydown' && event.code === 'Backspace') {
+            this.term.write(ansi.cursor.back() + ' ' + ansi.cursor.back());
+            return false;
+        }
+        if (event.type === 'keydown' && event.code === 'Enter') {
+            this.term.write(ansi.cursor.nextLine());
+            return false;
+        }
+        return true;
     }
 
     onMouseDown(event: MouseEvent) {
