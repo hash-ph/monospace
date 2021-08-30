@@ -1,11 +1,13 @@
+@import '../../../node_modules/xterm/css/xterm.css';
+
 .editor-container {
     position: relative;
-    height: calc(100vh - 20px);
 }
 
 .editor {
-    width: 100%;
-    height: 100%;
+    width: 100vw;
+    height: 100vh;
+
     position: relative;
     overflow-y: scroll;
 
@@ -15,8 +17,9 @@
     white-space: pre;
     hyphens: auto;
 
-    // caret-color: rgba(0, 0, 0, 0);
-    cursor: pointer;
+    .terminal.xterm {
+        cursor: pointer;
+    }
 }
 
 .ghost-cursor {

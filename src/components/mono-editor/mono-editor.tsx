@@ -1,23 +1,7 @@
-import { Component, h, State } from '@stencil/core';
-
-function fontDimensions(el: HTMLElement, resolution = 10) {
-    const tmpEl = el.cloneNode() as HTMLElement;
-    tmpEl.style.position = 'absolute';
-    tmpEl.innerText = Array.from(Array(resolution))
-        .fill(Array.from(Array(resolution)).fill('X').join(''))
-        .join('\n');
-    document.body.appendChild(tmpEl);
-
-    const w = tmpEl.clientWidth;
-    const h = tmpEl.clientHeight;
-
-    document.body.removeChild(tmpEl);
-
-    return {
-        width: w / resolution,
-        height: h / resolution,
-    };
-}
+import { Component, h } from '@stencil/core';
+import ansi from 'ansi-escape-sequences';
+import { Terminal } from 'xterm';
+import { FitAddon } from 'xterm-addon-fit';
 
 @Component({
     tag: 'mono-editor',
@@ -25,56 +9,47 @@ function fontDimensions(el: HTMLElement, resolution = 10) {
     shadow: true,
 })
 export class MonoEditor {
-    tileDimensions = fontDimensions(document.createElement('div'));
+    term: Terminal;
+    termFitAddon: FitAddon;
+
     editorEl!: HTMLElement;
-    cursorEl!: HTMLElement;
+    measure = { w: 0, h: 0 };
 
-    @State() col: number = 0;
-    @State() row: number = 0;
+    componentDidLoad() {
+        this.term = new Terminal();
+        this.termFitAddon = new FitAddon();
+        this.term.loadAddon(this.termFitAddon);
+        this.term.open(this.editorEl);
 
-    private recalculateCursor(event: MouseEvent) {
-        const cx = (event as any).layerX + this.editorEl.scrollLeft;
-        const cy = (event as any).layerY + this.editorEl.scrollTop;
+        this.term.onData(this.onTerminalData.bind(this));
 
-        this.col = Math.floor(cx / this.tileDimensions.width);
-        this.row = Math.floor(cy / this.tileDimensions.height);
-
-        this.cursorEl.style.width = `${this.tileDimensions.width}px`;
-        this.cursorEl.style.height = `${this.tileDimensions.height}px`;
-        this.cursorEl.style.left = `${
-            this.editorEl.clientLeft +
-            this.col * this.tileDimensions.width -
-            this.editorEl.scrollLeft
-        }px`;
-        this.cursorEl.style.top = `${
-            this.editorEl.clientTop +
-            this.row * this.tileDimensions.height -
-            this.editorEl.scrollTop
-        }px`;
+        const measureEl = this.term.element.querySelector('.xterm-char-measure-element');
+        this.measure.w = measureEl.clientWidth;
+        this.measure.h = measureEl.clientHeight;
+        this.termFitAddon.fit();
     }
 
-    onMouseMove(event: MouseEvent) {
-        this.recalculateCursor(event);
+    disconnectedCallback() {
+        this.term.dispose();
+    }
+
+    onTerminalData(data: string) {
+        this.term.write(data);
     }
 
     onMouseDown(event: MouseEvent) {
-        this.recalculateCursor(event);
-
-        let lines = this.editorEl.innerText.split('\n');
-
-        if (lines.length < this.row) {
-            const newLines = this.row - lines.length + 1;
-            lines = lines.concat(...Array.from(Array(newLines).fill('')));
+        // Ignore any clicks other than left mouse clicks.
+        if (event.button !== 0) {
+            return;
         }
 
-        let line = lines[this.row];
-        if (line.length < this.col) {
-            const newSpaces = this.col - line.length;
-            const spaces = Array.from(Array(newSpaces)).fill(' ').join('');
-            lines[this.row] = line + spaces;
-        }
+        const x = (event as any).layerX;
+        const y = (event as any).layerY;
+        const col = Math.floor(x / this.measure.w);
+        const row = Math.floor(y / this.measure.h);
 
-        this.editorEl.innerText = lines.join('\n');
+        // ANSI cursor position is 1-indexed.
+        this.term.write(ansi.cursor.position(row + 1, col + 1));
     }
 
     render() {
@@ -82,16 +57,10 @@ export class MonoEditor {
             <div class="editor-container">
                 <div
                     class="editor"
-                    onMouseMove={event => this.onMouseMove(event)}
-                    onMouseDown={event => this.onMouseDown(event)}
                     contentEditable={true}
+                    onMouseDown={e => this.onMouseDown(e)}
                     ref={el => (this.editorEl = el as HTMLElement)}
                 ></div>
-                <div class="ghost-cursor" ref={el => (this.cursorEl = el as HTMLElement)}></div>
-
-                <div>
-                    Line {this.row}, Col {this.col}
-                </div>
             </div>
         );
     }
