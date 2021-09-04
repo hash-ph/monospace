@@ -1,7 +1,7 @@
 import { Component, h } from '@stencil/core';
 import ansi from 'ansi-escape-sequences';
-import { Terminal } from 'xterm';
 import { FitAddon } from 'xterm-addon-fit';
+import { MonoTerminal } from './mono-terminal';
 
 @Component({
     tag: 'mono-editor',
@@ -9,16 +9,16 @@ import { FitAddon } from 'xterm-addon-fit';
     shadow: true,
 })
 export class MonoEditor {
-    term: Terminal;
+    term: MonoTerminal;
     termFitAddon: FitAddon;
 
     editorEl!: HTMLElement;
     measure = { w: 0, h: 0 };
 
     componentDidLoad() {
-        this.term = new Terminal({
+        this.term = new MonoTerminal({
             theme: {
-                background: '#eaeaea',
+                background: '#fafafa',
                 foreground: '#3a3a3a',
                 cursor: '#ffd866',
                 selection: '#ffd866',
@@ -56,11 +56,26 @@ export class MonoEditor {
             this.term.write(ansi.cursor.nextLine());
             return false;
         }
-        if (event.ctrlKey && event.code === 'KeyA') {
+        if (event.type === 'keydown' && event.ctrlKey && event.code === 'KeyA') {
+            event.preventDefault();
             this.term.selectAll();
             return false;
         }
-        return true;
+        if (event.type === 'keydown' && event.ctrlKey && event.code === 'ArrowLeft') {
+            event.preventDefault();
+            this.term.cursorToPrevWord();
+            return false;
+        }
+        if (event.type === 'keydown' && event.ctrlKey && event.code === 'ArrowRight') {
+            event.preventDefault();
+            this.term.cursorToNextWord();
+            return false;
+        }
+        if (event.type === 'keydown' && event.altKey && event.code === 'Enter') {
+            // TODO
+            return false;
+        }
+        if (event.ctrlKey && event.code === '') return true;
     }
 
     onMouseDown(event: MouseEvent) {
