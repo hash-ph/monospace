@@ -48,12 +48,20 @@ export class MonoEditor {
     }
 
     terminalKeyHandler(event: KeyboardEvent): boolean {
+        console.debug(event);
+
         if (event.type === 'keydown' && event.code === 'Backspace') {
             this.term.write(ansi.cursor.back() + ' ' + ansi.cursor.back());
             return false;
         }
-        if (event.type === 'keydown' && event.code === 'Enter') {
-            this.term.write(ansi.cursor.nextLine());
+        if (event.type === 'keydown' && !event.ctrlKey && event.code === 'Enter') {
+            event.preventDefault();
+            this.term.cursorToNextEstimatedLine();
+            return false;
+        }
+        if (event.type === 'keydown' && event.ctrlKey && event.code === 'Enter') {
+            event.preventDefault();
+            this.term.cursorToNextLine();
             return false;
         }
         if (event.type === 'keydown' && event.ctrlKey && event.code === 'KeyA') {
@@ -71,11 +79,7 @@ export class MonoEditor {
             this.term.cursorToNextWord();
             return false;
         }
-        if (event.type === 'keydown' && event.altKey && event.code === 'Enter') {
-            // TODO
-            return false;
-        }
-        if (event.ctrlKey && event.code === '') return true;
+        // if (event.ctrlKey && event.code === '') return true;
     }
 
     onMouseDown(event: MouseEvent) {

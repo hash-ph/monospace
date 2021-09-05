@@ -45,7 +45,7 @@ export class MonoTerminal extends Terminal {
         const line = this.currentLine().slice(0, this.cursorX);
 
         const match = line.match(re);
-        if (match && match.length) {
+        if (match && match[0]) {
             const shift = match[0].length;
             this.write(ansi.cursor.position(this.cursorY + 1, this.cursorX + 1 - shift));
         }
@@ -56,13 +56,26 @@ export class MonoTerminal extends Terminal {
         const line = this.currentLine().slice(this.cursorX);
 
         const match = line.match(re);
-        if (match && match.length) {
+        if (match && match[0]) {
             const shift = match[0].length;
             this.write(ansi.cursor.position(this.cursorY + 1, this.cursorX + 1 + shift));
         }
     }
 
     cursorToNextEstimatedLine() {
-        // TODO
+        const re = /(\s{2,})(\-\s)?((\S+\s?)+\s*)$/;
+        const line = this.currentLine().slice(0, this.cursorX);
+
+        const match = line.match(re);
+        if (match && match[3]) {
+            const shift = match[3].length;
+            this.write(ansi.cursor.position(this.cursorY + 2, this.cursorX + 1 - shift));
+        } else {
+            this.cursorToNextLine();
+        }
+    }
+
+    cursorToNextLine() {
+        this.write(ansi.cursor.position(this.cursorY + 2, 1));
     }
 }
