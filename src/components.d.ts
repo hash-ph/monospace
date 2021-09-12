@@ -9,6 +9,9 @@ export namespace Components {
     interface AppRoot {
     }
     interface MonoEditor {
+        "dimensions": { cols: number; rows: number; };
+        "tag": string;
+        "text": string;
     }
 }
 declare global {
@@ -33,6 +36,10 @@ declare namespace LocalJSX {
     interface AppRoot {
     }
     interface MonoEditor {
+        "dimensions"?: { cols: number; rows: number; };
+        "onTextUpdated"?: (event: CustomEvent<string>) => void;
+        "tag"?: string;
+        "text"?: string;
     }
     interface IntrinsicElements {
         "app-root": AppRoot;
