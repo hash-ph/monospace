@@ -33,10 +33,8 @@ export class MonoEditor {
             },
         };
         this.term = new MonoTerminal(options);
-        if (!this.dimensions) {
-            this.termFitAddon = new FitAddon();
-            this.term.loadAddon(this.termFitAddon);
-        }
+        this.termFitAddon = new FitAddon();
+        this.term.loadAddon(this.termFitAddon);
         this.term.open(this.editorEl);
 
         // For copy paste stuff.
@@ -66,20 +64,19 @@ export class MonoEditor {
     }
 
     onTerminalResize() {
-        const measureEl = this.term.element.querySelector('.xterm-char-measure-element');
-        this.measure.w = measureEl.clientWidth;
-        this.measure.h = measureEl.clientHeight;
-
-        // If dimensions is unspecified, use autofit.
-        if (!this.dimensions) {
-            this.termFitAddon.fit();
-            return;
+        if (this.dimensions) {
+            this.termFitAddon.proposeDimensions().cols = this.dimensions.cols;
+            this.termFitAddon.proposeDimensions().rows = this.dimensions.rows;
         }
+        this.termFitAddon.fit();
 
         // Fit container to size of terminal.
         const screen = this.editorEl.querySelector('.xterm-screen') as HTMLElement;
         this.editorEl.style.height = screen.style.height;
         this.editorEl.style.width = screen.style.width;
+
+        this.measure.w = screen.clientWidth / this.term.cols;
+        this.measure.h = screen.clientHeight / this.term.rows;
     }
 
     terminalKeyHandler(event: KeyboardEvent): boolean {

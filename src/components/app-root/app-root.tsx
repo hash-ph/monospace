@@ -16,7 +16,7 @@ export class AppRoot {
     render() {
         return (
             <div>
-                <mono-editor text={this.text} dimensions={{ cols: 80, rows: 32 }}></mono-editor>
+                <mono-editor text={this.text} dimensions={{ cols: 80, rows: 24 }}></mono-editor>
             </div>
         );
     }
