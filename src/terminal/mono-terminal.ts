@@ -1,5 +1,7 @@
 import { ITerminalOptions, Terminal } from 'xterm';
 import ansi from 'ansi-escape-sequences';
+import { Command } from './commands/command';
+import { EasterEgg } from './commands/easter-egg';
 
 export class MonoTerminal extends Terminal {
     constructor(options?: ITerminalOptions) {
@@ -77,5 +79,14 @@ export class MonoTerminal extends Terminal {
 
     cursorToNextLine() {
         this.write(ansi.cursor.position(this.cursorY + 2, 1));
+    }
+
+    commands = [
+        { name: 'Run easter egg', command: new EasterEgg() },
+        { name: 'Run easter egg #2', command: new EasterEgg() },
+    ];
+
+    execute<T>(cmd: Command<T>, param: T) {
+        cmd.execute(this, param);
     }
 }

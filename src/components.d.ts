@@ -13,6 +13,8 @@ export namespace Components {
         "tag": string;
         "text": string;
     }
+    interface PopupMenu {
+    }
 }
 declare global {
     interface HTMLAppRootElement extends Components.AppRoot, HTMLStencilElement {
@@ -27,9 +29,16 @@ declare global {
         prototype: HTMLMonoEditorElement;
         new (): HTMLMonoEditorElement;
     };
+    interface HTMLPopupMenuElement extends Components.PopupMenu, HTMLStencilElement {
+    }
+    var HTMLPopupMenuElement: {
+        prototype: HTMLPopupMenuElement;
+        new (): HTMLPopupMenuElement;
+    };
     interface HTMLElementTagNameMap {
         "app-root": HTMLAppRootElement;
         "mono-editor": HTMLMonoEditorElement;
+        "popup-menu": HTMLPopupMenuElement;
     }
 }
 declare namespace LocalJSX {
@@ -41,9 +50,12 @@ declare namespace LocalJSX {
         "tag"?: string;
         "text"?: string;
     }
+    interface PopupMenu {
+    }
     interface IntrinsicElements {
         "app-root": AppRoot;
         "mono-editor": MonoEditor;
+        "popup-menu": PopupMenu;
     }
 }
 export { LocalJSX as JSX };
@@ -52,6 +64,7 @@ declare module "@stencil/core" {
         interface IntrinsicElements {
             "app-root": LocalJSX.AppRoot & JSXBase.HTMLAttributes<HTMLAppRootElement>;
             "mono-editor": LocalJSX.MonoEditor & JSXBase.HTMLAttributes<HTMLMonoEditorElement>;
+            "popup-menu": LocalJSX.PopupMenu & JSXBase.HTMLAttributes<HTMLPopupMenuElement>;
         }
     }
 }

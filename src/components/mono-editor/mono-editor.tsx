@@ -2,7 +2,7 @@ import { Component, Event, EventEmitter, h, Prop, Watch } from '@stencil/core';
 import ansi from 'ansi-escape-sequences';
 import { ITerminalOptions } from 'xterm';
 import { FitAddon } from 'xterm-addon-fit';
-import { MonoTerminal } from './mono-terminal';
+import { MonoTerminal } from '../../terminal/mono-terminal';
 
 @Component({
     tag: 'mono-editor',
