@@ -5,7 +5,7 @@ import { newNote, Note } from '../../library/models';
 
 const KEY_FOCUSED_NOTE_ID = 'key::focused_note_id';
 const KEY_NOTE_IDS = 'key::note_ids';
-const KEY_ROOT_STATE = 'key::root_state';
+// const KEY_ROOT_STATE = 'key::root_state';
 
 @Component({
     tag: 'app-root',
