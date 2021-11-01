@@ -1,4 +1,9 @@
-import { Component, h, State } from '@stencil/core';
+import { Component, h, Listen, State } from '@stencil/core';
+import localforage from 'localforage';
+
+import { Note } from '../../library/models';
+
+const DEFAULT_DRAFT = 'uuid_DRAFT';
 
 @Component({
     tag: 'app-root',
@@ -6,15 +11,29 @@ import { Component, h, State } from '@stencil/core';
     shadow: true,
 })
 export class AppRoot {
-    @State() text = `\r
-    Hint #1: Hit ctrl+shift+p to open the menu\r
-    Hint #2: Click anywhere and type!\r
-    `;
+    @State() notes: Note[] = [];
+    @State() content = ``;
+
+    componentWillLoad() {
+        localforage.getItem(DEFAULT_DRAFT, (err, value: string) => {
+            if (err) {
+                console.warn(`loading ${DEFAULT_DRAFT} value from localforage: ${err}`);
+                return;
+            }
+            this.content = value;
+        });
+    }
+
+    @Listen('contentChanged')
+    handleContentChanged(event) {
+        localforage.setItem(DEFAULT_DRAFT, event.detail);
+    }
 
     render() {
         return (
             <div class="root-container">
-                <mono-editor></mono-editor>
+                <mono-organizer class="sidebar"></mono-organizer>
+                <mono-editor class="contents" content={this.content}></mono-editor>
             </div>
         );
     }

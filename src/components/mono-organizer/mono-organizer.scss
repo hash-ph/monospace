@@ -1,0 +1,57 @@
+.organizer-container {
+    width: 480px;
+    height: 100vh;
+    max-height: 100vh;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+
+    > .section {
+        display: flex;
+        flex-direction: column;
+        align-items: stretch;
+    }
+}
+
+.mono-h1 {
+    font-size: 24px;
+    font-weight: bold;
+    padding: 8px;
+}
+
+.search-input {
+    font-size: 16px;
+    font-family: inherit;
+    margin: 8px;
+
+    outline-style: none;
+    box-shadow: 0 1px #6a6a6a;
+    border-color: transparent;
+
+    :focus {
+        box-shadow: 0 1px black;
+    }
+}
+
+.button {
+    font-size: 16px;
+    font-family: inherit;
+    margin: 8px;
+    padding: 4px;
+
+    background-color: white;
+    border: none;
+    outline: 1px solid black;
+    box-shadow: 2px 2px 0 1px black;
+
+    &.-box {
+        width: 142px;
+        height: 142px;
+    }
+
+    &:active {
+        border: 1px solid black;
+        box-shadow: none;
+    }
+}

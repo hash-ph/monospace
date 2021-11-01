@@ -9,6 +9,9 @@ export namespace Components {
     interface AppRoot {
     }
     interface MonoEditor {
+        "content": string;
+    }
+    interface MonoOrganizer {
     }
 }
 declare global {
@@ -24,19 +27,31 @@ declare global {
         prototype: HTMLMonoEditorElement;
         new (): HTMLMonoEditorElement;
     };
+    interface HTMLMonoOrganizerElement extends Components.MonoOrganizer, HTMLStencilElement {
+    }
+    var HTMLMonoOrganizerElement: {
+        prototype: HTMLMonoOrganizerElement;
+        new (): HTMLMonoOrganizerElement;
+    };
     interface HTMLElementTagNameMap {
         "app-root": HTMLAppRootElement;
         "mono-editor": HTMLMonoEditorElement;
+        "mono-organizer": HTMLMonoOrganizerElement;
     }
 }
 declare namespace LocalJSX {
     interface AppRoot {
     }
     interface MonoEditor {
+        "content"?: string;
+        "onContentChanged"?: (event: CustomEvent<string>) => void;
+    }
+    interface MonoOrganizer {
     }
     interface IntrinsicElements {
         "app-root": AppRoot;
         "mono-editor": MonoEditor;
+        "mono-organizer": MonoOrganizer;
     }
 }
 export { LocalJSX as JSX };
@@ -45,6 +60,7 @@ declare module "@stencil/core" {
         interface IntrinsicElements {
             "app-root": LocalJSX.AppRoot & JSXBase.HTMLAttributes<HTMLAppRootElement>;
             "mono-editor": LocalJSX.MonoEditor & JSXBase.HTMLAttributes<HTMLMonoEditorElement>;
+            "mono-organizer": LocalJSX.MonoOrganizer & JSXBase.HTMLAttributes<HTMLMonoOrganizerElement>;
         }
     }
 }
