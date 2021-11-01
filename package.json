@@ -24,6 +24,7 @@
     "@fortawesome/fontawesome-free": "^5.15.4",
     "ansi-escape-sequences": "^6.2.0",
     "easymde": "^2.15.0",
-    "localforage": "^1.10.0"
+    "localforage": "^1.10.0",
+    "uuid": "^8.3.2"
   }
 }

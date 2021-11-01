@@ -1,5 +1,5 @@
 .organizer-container {
-    width: 480px;
+    width: 364px;
     height: 100vh;
     max-height: 100vh;
     overflow-y: auto;
@@ -11,6 +11,7 @@
         display: flex;
         flex-direction: column;
         align-items: stretch;
+        margin: 24px;
     }
 }
 
@@ -42,8 +43,8 @@
 
     background-color: white;
     border: none;
-    outline: 1px solid black;
-    box-shadow: 2px 2px 0 1px black;
+    outline: 1px solid #a6a6a6;
+    box-shadow: 2px 2px 0 1px #a6a6a6;
 
     &.-box {
         width: 142px;

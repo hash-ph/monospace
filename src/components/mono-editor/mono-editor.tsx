@@ -29,12 +29,8 @@ export class MonoEditor {
         });
         this.editor.value(this.content);
 
-        let debounceId;
         this.editor.codemirror.on('change', () => {
-            clearTimeout(debounceId);
-            debounceId = setTimeout(() => {
-                this.contentChanged.emit(this.editor.value());
-            }, 1000);
+            this.contentChanged.emit(this.editor.value());
         });
     }
 
