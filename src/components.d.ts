@@ -5,6 +5,7 @@
  * It contains typing information for all components that exist in this project.
  */
 import { HTMLStencilElement, JSXBase } from "@stencil/core/internal";
+import { Note } from "./library/models";
 export namespace Components {
     interface AppRoot {
     }
@@ -12,6 +13,7 @@ export namespace Components {
         "content": string;
     }
     interface MonoOrganizer {
+        "notes": Note[];
     }
 }
 declare global {
@@ -47,6 +49,9 @@ declare namespace LocalJSX {
         "onContentChanged"?: (event: CustomEvent<string>) => void;
     }
     interface MonoOrganizer {
+        "notes"?: Note[];
+        "onNoteCreate"?: (event: CustomEvent<void>) => void;
+        "onNoteLoad"?: (event: CustomEvent<string>) => void;
     }
     interface IntrinsicElements {
         "app-root": AppRoot;

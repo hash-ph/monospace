@@ -29,8 +29,12 @@ export class MonoEditor {
         });
         this.editor.value(this.content);
 
+        let timeout: any;
         this.editor.codemirror.on('change', () => {
-            this.contentChanged.emit(this.editor.value());
+            if (timeout) clearTimeout(timeout);
+            timeout = setTimeout(() => {
+                this.contentChanged.emit(this.editor.value());
+            }, 1000);
         });
     }
 

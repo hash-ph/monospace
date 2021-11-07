@@ -1,4 +1,5 @@
-import { Component, h } from '@stencil/core';
+import { Component, Event, EventEmitter, h, Prop } from '@stencil/core';
+import { Note } from '../../library/models';
 
 @Component({
     tag: 'mono-organizer',
@@ -6,6 +7,10 @@ import { Component, h } from '@stencil/core';
     shadow: true,
 })
 export class MonoOrganizer {
+    @Prop() notes: Note[] = [];
+    @Event() noteCreate: EventEmitter<void>;
+    @Event() noteLoad: EventEmitter<string>;
+
     render() {
         return (
             <div class="organizer-container">
@@ -13,15 +18,18 @@ export class MonoOrganizer {
                     <div class="mono-h1">## Your notes and stuff</div>
                     <input class="search-input" type="text" placeholder="Type to search..." />
                     <div>
-                        <button class="button -box">My note 1</button>
-                        <button class="button -box">My note 2</button>
-                        <button class="button -box">My note 3</button>
-                        <button class="button -box">My note 4</button>
+                        {this.notes.map(note => (
+                            <button class="button -box" onClick={() => this.noteLoad.emit(note.id)}>
+                                {note.title}
+                            </button>
+                        ))}
                     </div>
                 </div>
                 <div class="section">
                     <div class="mono-h1">## Create</div>
-                    <button class="button">New note</button>
+                    <button class="button" onClick={() => this.noteCreate.emit()}>
+                        New note
+                    </button>
                 </div>
             </div>
         );

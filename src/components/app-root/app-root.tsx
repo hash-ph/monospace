@@ -1,11 +1,13 @@
 import { Component, h, Listen, State } from '@stencil/core';
-import localforage from 'localforage';
 
-import { newNote, Note } from '../../library/models';
+import { NotesManager } from '../../library/manager';
+import { newNote, Note, parse } from '../../library/models';
 
-const KEY_FOCUSED_NOTE_ID = 'key::focused_note_id';
-const KEY_NOTE_IDS = 'key::note_ids';
-// const KEY_ROOT_STATE = 'key::root_state';
+const STATE_KEY = 'mono:states:root';
+
+interface RootState {
+    focusId?: string;
+}
 
 @Component({
     tag: 'app-root',
@@ -13,61 +15,57 @@ const KEY_NOTE_IDS = 'key::note_ids';
     shadow: true,
 })
 export class AppRoot {
-    @State() noteIds: string[] = [];
-    @State() focusedNote: Note = newNote();
+    @State() state: RootState = {};
+    @State() notes: Note[] = [];
+    @State() focus?: Note = newNote();
+    @State() focusText = '';
 
-    async componentDidLoad() {
-        this.noteIds = await localforage.getItem<string[]>(KEY_NOTE_IDS);
-        const noteId = await localforage.getItem<Note>(KEY_FOCUSED_NOTE_ID);
-        if (!noteId) {
-            this.loadNote(newNote());
-            return;
+    private manager = new NotesManager();
+
+    async componentWillLoad() {
+        await this.manager.reset();
+        this.state = await this.manager.loadState<RootState>(STATE_KEY);
+        if (!this.state) {
+            this.state = {};
         }
-        this.loadNoteId(noteId);
+        if (this.state?.focusId) {
+            this.focus = await this.manager.get(this.state?.focusId);
+        }
+        this.notes = await this.manager.list();
     }
 
-    async loadNote(note: Note) {
-        this.focusedNote = note;
+    @Listen('noteCreate')
+    async handleNoteCreate() {
+        this.focus = newNote();
+        this.focusText = '';
+        this.state.focusId = this.focus?.id;
+        await this.manager.saveState<RootState>(STATE_KEY, this.state);
+
+        console.log(this.focusText);
     }
 
-    async deleteNote(note: Note) {
-        await localforage.removeItem(note.id);
-    }
-
-    @Listen('newNote')
-    async newNote() {
-        this.loadNote(newNote());
-    }
-
-    @Listen('saveNote')
-    async saveNote() {
-        await localforage.setItem(KEY_FOCUSED_NOTE_ID, this.focusedNote.id);
-        await localforage.setItem(this.focusedNote.id, this.focusedNote);
-    }
-
-    @Listen('loadNoteId')
-    async loadNoteId(event: string | any) {
-        const id = typeof event === 'string' ? event : event.detail;
-        this.loadNote(await localforage.getItem(id));
-    }
-
-    @Listen('deleteNodeId')
-    async deleteNoteId(event: string | any) {
-        const id = typeof event === 'string' ? event : event.detail;
-        this.deleteNote(await localforage.getItem(id));
+    @Listen('noteLoad')
+    async handleNoteLoad(event: any) {
+        this.focus = await this.manager.get(event.detail);
+        this.focusText = this.focus.content;
+        this.state.focusId = this.focus?.id;
+        await this.manager.saveState<RootState>(STATE_KEY, this.state);
     }
 
     @Listen('contentChanged')
-    handleContentChanged(event) {
-        this.focusedNote.content = event.detail;
-        this.saveNote();
+    async handleContentChanged(event: any) {
+        this.focus.content = event.detail;
+        this.focus = parse(this.focus);
+        await this.manager.set(this.focus);
+
+        this.notes = await this.manager.list();
     }
 
     render() {
         return (
             <div class="root-container">
-                <mono-organizer class="sidebar"></mono-organizer>
-                <mono-editor class="contents" content={this.focusedNote.content}></mono-editor>
+                <mono-organizer class="sidebar" notes={this.notes}></mono-organizer>
+                <mono-editor class="contents" content={this.focusText}></mono-editor>
             </div>
         );
     }
